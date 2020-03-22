@@ -2,7 +2,15 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/components/login'
 import Home from '@/components/home'
-
+import Welcome from '@/components/welcome'
+import Users from '@/components/users'
+import Rights from '@/components/rights'
+import Roles from '@/components/roles'
+import Goods from '@/components/goods'
+import Params from '@/components/params'
+import Categories from '@/components/categories'
+import Orders from '@/components/orders'
+import Reports from '@/components/reports'
 
 Vue.use(VueRouter)
 
@@ -17,11 +25,24 @@ const routes = [{
   {
     path: '/home',
     component: Home,
+    redirect: '/welcome',
+    children:[
+      // {path:'welcome', component:Welcome} // home/welcome
+      {path:'/welcome', component:Welcome},
+      {path:'/users', component:Users},
+      {path:'/roles', component:Roles},
+      {path:'/rights', component:Rights},
+      {path:'/goods', component:Goods},
+      {path:'/params', component:Params},
+      {path:'/categories', component:Categories},
+      {path:'/orders', component:Orders},
+      {path:'/reports', component:Reports},
+    ]
   }
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

@@ -8,3 +8,7 @@ username=admin&password=123456
 
 ###
 get {{url}}users
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjUwMCwicmlkIjowLCJpYXQiOjE1ODQ4NjgwNTcsImV4cCI6MTU4NDk1NDQ1N30.mtemcWJ09kiErUeGV4IYF5R-1U0ciOT4biRk2MBpDtQ
+Content-Type: application/x-www-form-urlencoded
+
+pagenum=1

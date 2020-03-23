@@ -21,7 +21,11 @@ import {
   TableColumn,
   Switch,
   Tooltip,
-  Pagination
+  Pagination,
+  Dialog,
+  Select,
+  Option,
+  MessageBox
 } from 'element-ui'
 
 Vue.use(Button)
@@ -45,10 +49,15 @@ Vue.use(TableColumn)
 Vue.use(Switch)
 Vue.use(Tooltip)
 Vue.use(Pagination)
+Vue.use(Dialog)
+Vue.use(Select)
+Vue.use(Option)
 
+
+Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$message = Message
 //自定义全局弹窗事件
-Vue.prototype.messageEvent = function (message, type, duration, center) {
+Vue.prototype.messageEvent = function (message, type = 'success', duration = 1500, center = true) {
   this.$message({
     message,
     type,

@@ -68,3 +68,6 @@ Vue.prototype.messageEvent = function (message, type = 'success', duration = 150
     center
   });
 }
+Vue.prototype.handleError = function(res) {
+  this.messageEvent(res.meta.msg, 'error')
+}

@@ -49,7 +49,7 @@
               @click="deleteUserBtn(scope.row.id)"
             ></el-button>
             <el-tooltip effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="warning" icon="el-icon-setting" size="mini" @click="showSettingDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -113,6 +113,27 @@
         <el-button type="primary" @click="editSubmit">确 定</el-button>
       </div>
     </el-dialog>
+
+    <el-dialog title="分配角色" :visible.sync="settingDialogVisible" @close='roleSelectedId = ""'>
+      <el-form label-width="100px" :model="settingUserForm">
+        <el-form-item label='当前用户：'>
+          <el-input v-model="settingUserForm.username" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label='当前角色：'>
+          <el-input v-model="settingUserForm.role_name" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="分配新角色：">
+          <el-select v-model="roleSelectedId">
+            <el-option v-for="item in roleSelectedOptions" :key="item.id" :value="item.id" :label="item.roleName">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="settingDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveUserRole">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -123,7 +144,9 @@ import {
   addUser,
   getUserById,
   editUser,
-  deleteUserById
+  deleteUserById,
+  getRoles,
+  setUserRoleById
 } from '@/network/users.js'
 import { validateEmail, validateMobile } from '@/utils/utils.js'
 export default {
@@ -178,7 +201,14 @@ export default {
         // role: [{ required: true, message: '请输入角色名', trigger: 'blur' }]
       },
       editDialogVisible: false,
-      editUserForm: {}
+      editUserForm: {},
+      settingDialogVisible: false,
+      settingUserForm: {
+        username: '',
+        role_name: ''
+      },
+      roleSelectedId: '',
+      roleSelectedOptions: []
     }
   },
   computed: {},
@@ -299,6 +329,25 @@ export default {
         .catch(() => {
           this.messageEvent('已取消删除', 'info')
         })
+    },
+    async showSettingDialog(user) {
+      // console.log(user)
+      this.settingUserForm = user
+      const {data:res} = await getRoles()
+      if (res.meta.status !== 200)
+            return this.messageEvent('获取角色列表失败', 'error')
+      this.roleSelectedOptions = res.data
+      this.settingDialogVisible = true
+    },
+    async saveUserRole() {
+      // console.log(this.roleSelectedId)
+      // console.log(this.settingUserForm.id)
+      if(this.roleSelectedId === '') return this.messageEvent('请选择角色', 'error')
+      const {data:res} = await setUserRoleById(this.settingUserForm.id, this.roleSelectedId)
+      if (res.meta.status !== 200)
+            return this.messageEvent(res.meta.msg, 'error')
+      this._getUsers()
+      this.settingDialogVisible = false
     }
   }
 }

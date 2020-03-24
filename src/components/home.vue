@@ -72,7 +72,7 @@ export default {
   },
   async created() {
     const { data: res } = await getMenuList()
-    console.log(res)
+    // console.log(res)
     if (res.meta.status !== 200)
       return this.messageEvent(res.meta.msg, 'error', 1500, true)
       this.menuList = res.data

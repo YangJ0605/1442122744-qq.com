@@ -44,3 +44,20 @@ export function deleteUserById(id) {
     method: 'delete'
   })
 }
+
+export function setUserRoleById(id, rid) {
+  return request({
+    url: `users/${id}/role`,
+    method: 'put',
+    data: {
+      rid
+    }
+  })
+}
+
+export function getRoles() {
+  return request({
+    url: `roles`,
+    method: 'get'
+  })
+}

@@ -23,7 +23,7 @@
               class="center"
             >
               <el-col :span="5">
-                <el-tag>{{item1.authName}}</el-tag>
+                <el-tag closable @close="removeRoleRight(scope.row, item1.id)">{{item1.authName}}</el-tag>
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <el-col :span="19">
@@ -34,11 +34,21 @@
                   :class="index2 === 0 ? '' : 'border-top'"
                 >
                   <el-col :span="6">
-                    <el-tag type="success">{{item2.authName}}</el-tag>
+                    <el-tag
+                      type="success"
+                      closable
+                      @close="removeRoleRight(scope.row, item2.id)"
+                    >{{item2.authName}}</el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
                   <el-col :span="18">
-                    <el-tag v-for="item3 in item2.children" :key="item3.id" type="warning" closable @close="tagCloseEvent">{{item3.authName}}</el-tag>
+                    <el-tag
+                      v-for="item3 in item2.children"
+                      :key="item3.id"
+                      type="warning"
+                      closable
+                      @close="removeRoleRight(scope.row, item3.id)"
+                    >{{item3.authName}}</el-tag>
                   </el-col>
                 </el-row>
               </el-col>
@@ -49,23 +59,59 @@
         <el-table-column label="角色名称" prop="roleName"></el-table-column>
         <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
         <el-table-column label="操作" width="290px">
-          <template>
+          <template slot-scope="scope">
             <el-button type="primary" icon="el-icon-edit" size="mini">编辑</el-button>
             <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
-            <el-button type="warning" icon="el-icon-setting" size="mini">分配权限</el-button>
+            <el-button
+              type="warning"
+              icon="el-icon-setting"
+              size="mini"
+              @click="setRoleRightDialog(scope.row)"
+            >分配权限</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
+    <!-- 分配权限dialog -->
+    <el-dialog title="分配权限" :visible.sync="roleRightDialogVisible" @close='restKeys'>
+      <div>
+        <el-tree
+          :data="rightsTree"
+          show-checkbox
+          node-key="id"
+          :props="defaultProps"
+          default-expand-all
+          :default-checked-keys='defaultCheckedKeys'
+          ref="rightsTreeRef"
+        ></el-tree>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="roleRightDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRoleRights">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolestsList } from '@/network/roles.js'
+import {
+  getRolestsList,
+  deleteRoleRightById,
+  getRightsTree,
+  setRoleRightsByRoleId
+} from '@/network/roles.js'
 export default {
   data() {
     return {
-      rolesList: []
+      rolesList: [],
+      roleRightDialogVisible: false,
+      rightsTree: [],
+      defaultProps: {
+          children: 'children',
+          label: 'authName'
+        },
+      defaultCheckedKeys: [],
+      roleId: ''
     }
   },
   created() {
@@ -79,16 +125,77 @@ export default {
       this.rolesList = res.data
       // console.log(this.rolesList)
     },
-    async tagCloseEvent() {
-     const confirmText = await this.$confirm('此操作将永久删除该权限, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).catch(cancelText => {
+    async removeRoleRight(role, rightId) {
+      console.log(role.children)
+      console.log(role.id, rightId)
+      const confirmText = await this.$confirm(
+        '此操作将永久删除该权限, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      ).catch(cancelText => {
         return cancelText
       })
-      if (confirmText !== 'confirm') return this.messageEvent('已取消删除', 'info')
-      console.log('确认删除')
+      if (confirmText !== 'confirm')
+        return this.messageEvent('已取消删除', 'info')
+      const { data: res } = await deleteRoleRightById(role.id, rightId)
+      // console.log(res)
+      if (res.meta.status !== 200)
+        return this.messageEvent(res.meta.msg, 'error')
+      this.messageEvent(res.meta.msg)
+      // console.log(res.data)
+      role.children = res.data
+      // role = res.data
+      // this._getRolesList()
+    },
+    // expandChange(row, expandedRows) {
+    //   console.log('expand')
+    //   console.log(row, expandedRows)
+    // }
+    getChecksId(node, arr) {
+      if(!node.children) {
+         return arr.push(node.id)
+      }
+      node.children.forEach(child => {
+        this.getChecksId(child, arr)
+      })
+    },
+    async setRoleRightDialog(role) {
+      // console.log(role)
+      this.roleId = role.id
+      // console.log(this.roleId)
+      const { data: res } = await getRightsTree()
+      // console.log(res)
+      if (res.meta.status !== 200)
+        return this.messageEvent(res.meta.msg, 'error')
+      this.rightsTree = res.data
+      this.getChecksId(role, this.defaultCheckedKeys)
+      // console.log(this.defaultCheckedKeys)
+      this.roleRightDialogVisible = true
+    },
+    restKeys(){
+      //重置
+      this.defaultCheckedKeys = []
+    },
+    async setRoleRights() {
+      // console.log(this.$refs.rightsTreeRef.getCheckedKeys(true))
+      // console.log(this.$refs.rightsTreeRef.getHalfCheckedNodes())
+      const checkedKeys = this.$refs.rightsTreeRef.getCheckedKeys()
+      const halfCheckedNodes = this.$refs.rightsTreeRef.getHalfCheckedNodes()
+      halfCheckedNodes.forEach(node => {
+        checkedKeys.push(node.id)
+      })
+      // console.log(checkedKeys)
+      const rids = checkedKeys.join(',')
+      const {data:res} = await setRoleRightsByRoleId(this.roleId, rids)
+      if (res.meta.status !== 200)
+        return this.messageEvent(res.meta.msg, 'error')
+      this.messageEvent(res.meta.msg)
+      this._getRolesList()
+      this.roleRightDialogVisible = false
     }
   }
 }
@@ -99,10 +206,10 @@ export default {
   margin: 6px;
 }
 .border-top {
-  border-top: 1px solid red;
+  border-top: 1px solid #eee;
 }
 .border-bottom {
-  border-bottom: 1px solid red;
+  border-bottom: 1px solid #eee;
 }
 .center {
   display: flex;

@@ -1,11 +1,12 @@
 <template>
   <div>
-    <el-breadcrumb separator-class="el-icon-arrow-right">
+    <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品分类</el-breadcrumb-item>
-    </el-breadcrumb>
-
+    </el-breadcrumb> -->
+  <c-header text1='商品管理' text2='商品分类'></c-header>
+  
     <el-card>
       <el-row>
         <el-col>

@@ -8,9 +8,12 @@ import TreeTable from 'vue-table-with-tree-grid'
 import '@/assets/fonts/iconfont.css'
 //全局样式
 import '@/assets/css/global.css'
+//头部面包屑导航栏
+import CHeader from '@/components/common/header.vue'
 
 Vue.config.productionTip = false
 Vue.component('tree-table', TreeTable)
+Vue.component('c-header',CHeader)
 
 
 new Vue({

@@ -18,7 +18,7 @@
           :collapse="collapse"
           :collapse-transition="false"
           router
-          :default-active='currentActive'
+          :default-active="currentActive"
         >
           <el-submenu :index="String(index)" v-for="(item, index) in menuList" :key="item.id">
             <template slot="title">
@@ -26,11 +26,7 @@
               <span>{{item.authName}}</span>
             </template>
             <!-- :index="`${String(index)}-${String(index2)}`" -->
-            <el-menu-item
-              :index="`/${item2.path}`"
-              v-for="item2 in item.children"
-              :key="item2.id"
-            >
+            <el-menu-item :index="`/${item2.path}`" v-for="item2 in item.children" :key="item2.id">
               <i class="el-icon-menu"></i>
               <span>{{item2.authName}}</span>
             </el-menu-item>
@@ -75,8 +71,8 @@ export default {
     // console.log(res)
     if (res.meta.status !== 200)
       return this.messageEvent(res.meta.msg, 'error', 1500, true)
-      this.menuList = res.data
-      this.currentActive = this.$route.path
+    this.menuList = res.data
+    this.currentActive = this.$route.path
   }
 }
 </script>

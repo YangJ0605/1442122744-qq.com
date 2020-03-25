@@ -6,3 +6,21 @@ export function getCategories() {
     method: 'get'
   })
 }
+
+export function getParamsList(id,sel) {
+  return request({
+    url: `categories/${id}/attributes`,
+    method: 'get',
+    params: {
+      sel
+    }
+  })
+}
+
+export function addParam(id, params) {
+  return request({
+    url: `categories/${id}/attributes`,
+    method: 'post',
+    data: params
+  })
+}

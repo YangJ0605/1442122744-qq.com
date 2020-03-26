@@ -24,3 +24,18 @@ export function addParam(id, params) {
     data: params
   })
 }
+
+export function editParam(id, attrId, data) {
+  return request({
+    url: `categories/${id}/attributes/${attrId}`,
+    method: 'put',
+    data
+  })
+}
+
+export function deleteParam(id, attrId) {
+  return request({
+    url: `categories/${id}/attributes/${attrId}`,
+    method: 'delete'
+  })
+}

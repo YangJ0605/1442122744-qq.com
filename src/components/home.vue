@@ -2,7 +2,7 @@
   <el-container class="home-wrapper">
     <el-header>
       <div class="logo">
-        <img src="~@/assets/heima.png" alt />
+        <img src="~@/assets/my.jpeg"/>
         <span>cc电商后台管理系统</span>
       </div>
       <el-button type="info" @click="logout">退出</el-button>
@@ -91,6 +91,12 @@ export default {
   .logo {
     display: flex;
     align-items: center;
+    img {
+      margin-left: 10px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
     span {
       margin-left: 15px;
     }

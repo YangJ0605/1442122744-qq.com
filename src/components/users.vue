@@ -232,6 +232,7 @@ export default {
       this.usersList = res.data.users
       this.total = res.data.total
       this.pagenum = res.data.pagenum
+      this.isClear = false
     },
     handleSizeChange(size) {
       // console.log(size)

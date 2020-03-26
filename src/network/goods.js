@@ -7,3 +7,10 @@ export function getGoodsList(params) {
     params,
   })
 }
+
+export function deleteGoodsById(id) {
+  return request({
+    url: 'goods/' + id,
+    method: 'delete'
+  })
+}

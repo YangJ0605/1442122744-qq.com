@@ -29,6 +29,7 @@
               type="primary"
               icon="el-icon-edit"
               size="mini"
+              @click="editGoodsBtn(scope.row.goods_id)"
             ></el-button>
             <el-button
               type="danger"
@@ -121,6 +122,9 @@ export default {
         .catch(() => {
           this.messageEvent('已取消删除', 'info')
         })
+    },
+    async editGoodsBtn(id) {
+      
     }
   }
 }

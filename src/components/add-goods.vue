@@ -71,6 +71,7 @@
               :multiple="true"
               :on-success="onSuccessUpload"
               :headers="uploadheadrs"
+              :file-list="fileList"
             >
               <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
@@ -104,7 +105,11 @@ export default {
       }
       res.data.goods_cat = res.data.goods_cat.split(',')
       // res.data.goods_cat.forEach(item => Number(item))
+      res.data.pics.forEach(pic => {
+        this.fileList.push({url:pic.pics_mid_url})
+      })
       res.data.attrs.forEach(item => {
+        // console.log(item)
         if (item.attr_sel === 'only') {
           this.onlyData.push(item.attr_value)
         } else {
@@ -120,10 +125,11 @@ export default {
       this.cascaderSelectArr = this.addGoodsFrom.goods_cat
       this.title2 = '编辑商品'
       this.submitText = '提交修改商品'
-      console.log(this.addGoodsFrom)
+      // console.log(this.addGoodsFrom)
     }
     this._getcategories()
   },
+  computed: {},
   data() {
     return {
       title2: '添加商品',
@@ -139,6 +145,7 @@ export default {
         goods_introduce: '',
         attrs: []
       },
+      fileList:[],
       addGoodsFromRules: {
         goods_name: [
           { required: true, message: '请输入商品名称', trigger: 'blur' }
@@ -222,14 +229,23 @@ export default {
     },
     handleRemove(file) {
       // console.log(file)
-      const filePath = file.response.data.tmp_path
+     var filePath 
+      if (this.$route.path.includes('edit')) {
+        filePath = file.url.split('8888/')
+      } else {
+        filePath = file.response.data.tmp_path
+      }
       const pics = this.addGoodsFrom.pics
       const index = pics.findIndex(item => item.pic === filePath)
       pics.splice(index, 1)
     },
     handlePictureCardPreview(file) {
       // console.log(file)
-      this.dialogImageUrl = file.response.data.url
+      if (this.$route.path.includes('edit')) {
+        this.dialogImageUr = file.url
+      }else {
+        this.dialogImageUrl = file.response.data.url
+      }
       this.dialogVisible = true
     },
     onSuccessUpload(res) {
@@ -264,13 +280,16 @@ export default {
         // console.log(addNewGoods)
         if (this.$route.path.includes('edit')) {
           const id = this.addGoodsFrom.goods_id
+          // console.log(this.addGoodsFrom.goods_id,this.$route.query.id)
           const { data: res } = await editGoodsById(id, form)
+          // console.log(res)
           if (res.meta.status !== 200) {
             return this.handleError({meta:{msg:'修改失败'}})
           }
           this.messageEvent('修改成功')
         } else {
           const { data: res } = await addNewGoods(form)
+          // console.log(res)
           if (res.meta.status !== 201) {
             console.log(this.addGoodsFrom)
             return this.handleError(res)

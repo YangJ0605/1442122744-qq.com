@@ -35,6 +35,7 @@ const routes = [{
       {path:'/rights', component:Rights},
       {path:'/goods', component:Goods},
       {path: '/goods/add', component:AddGoods},
+      {path: '/goods/edit', component:AddGoods},
       {path:'/params', component:Params},
       {path:'/categories', component:Categories},
       {path:'/orders', component:Orders},

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { getGoodsList, deleteGoodsById, getGoodsById } from '@/network/goods.js'
+import { getGoodsList, deleteGoodsById} from '@/network/goods.js'
 export default {
   data() {
     return {
@@ -123,9 +123,8 @@ export default {
           this.messageEvent('已取消删除', 'info')
         })
     },
-    async editGoodsBtn(id) {
-      const {data:res} = await getGoodsById(id)
-      console.log(res)
+    editGoodsBtn(id) {
+      this.$router.push(`/goods/edit?id=${id}`)
     },
     goToAddGoods() {
       this.$router.push('/goods/add')

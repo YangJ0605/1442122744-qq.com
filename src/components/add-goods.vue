@@ -1,6 +1,6 @@
 <template>
   <div>
-    <c-header text1="商品管理" text2="添加商品"></c-header>
+    <c-header text1="商品管理" :text2="title2"></c-header>
     <el-card>
       <el-alert title="添加商品信息(商品分类只能选择三级)" type="info" center show-icon :closable="false"></el-alert>
 
@@ -44,7 +44,7 @@
                 placeholder="请选择三级分类"
                 :props="cascaderOptions"
                 :options="cateList"
-                v-model="cascaderSelectArr"
+                v-model="addGoodsFrom.goods_cat"
                 style="width:300px"
                 @change="handleChange"
               ></el-cascader>
@@ -72,13 +72,16 @@
               :on-success="onSuccessUpload"
               :headers="uploadheadrs"
             >
-              <i class="el-icon-plus"></i>
+              <el-button size="small" type="primary">点击上传</el-button>
             </el-upload>
             <el-dialog :visible.sync="dialogVisible">
               <img width="100%" :src="dialogImageUrl" alt />
             </el-dialog>
           </el-tab-pane>
-          <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
+          <el-tab-pane label="商品内容" name="4">
+            <quill-editor v-model="addGoodsFrom.goods_introduce" ref="myQuillEditor"></quill-editor>
+            <el-button type="primary" class="top" @click="addGoodsSubmit">{{submitText}}</el-button>
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
@@ -88,20 +91,53 @@
 <script>
 import { mixinCascader } from '@/mixins/mixin.js'
 import { getParamsList } from '@/network/params.js'
+import { addNewGoods, getGoodsById, editGoodsById } from '@/network/goods.js'
+
 export default {
   mixins: [mixinCascader],
-  created() {
+  async created() {
+    if (this.$route.path.includes('edit')) {
+      const id = this.$route.query.id
+      const { data: res } = await getGoodsById(id)
+      if (res.meta.status !== 200) {
+        return this.handleError(res)
+      }
+      res.data.goods_cat = res.data.goods_cat.split(',')
+      // res.data.goods_cat.forEach(item => Number(item))
+      res.data.attrs.forEach(item => {
+        if (item.attr_sel === 'only') {
+          this.onlyData.push(item.attr_value)
+        } else {
+          this.manyData = item.attr_value.split(' ')
+        }
+      })
+      // console.log(this.onlyData)
+      // console.log(this.manyData)
+      this.addGoodsFrom = res.data
+      this.addGoodsFrom.goods_cat = this.addGoodsFrom.goods_cat.map(item =>
+        Number(item)
+      )
+      this.cascaderSelectArr = this.addGoodsFrom.goods_cat
+      this.title2 = '编辑商品'
+      this.submitText = '提交修改商品'
+      console.log(this.addGoodsFrom)
+    }
     this._getcategories()
   },
   data() {
     return {
+      title2: '添加商品',
+      submitText: '添加商品',
       activeName: '0',
       addGoodsFrom: {
         goods_name: '',
         goods_cat: [],
-        goods_price: 0,
-        goods_number: 0,
-        goods_weight: 0
+        goods_price: 1,
+        goods_number: 1,
+        goods_weight: 1,
+        pics: [],
+        goods_introduce: '',
+        attrs: []
       },
       addGoodsFromRules: {
         goods_name: [
@@ -124,7 +160,7 @@ export default {
       manyData: [],
       uploadUrl: 'http://127.0.0.1:8888/api/private/v1/upload',
       uploadheadrs: {
-        Authorization: window.sessionStorage.getItem('token') 
+        Authorization: window.sessionStorage.getItem('token')
       },
       dialogImageUrl: '',
       dialogVisible: false
@@ -142,7 +178,7 @@ export default {
     },
     beforeLeave() {
       // console.log('cc')
-      if (this.cascaderSelectArr.length !== 3) {
+      if (this.addGoodsFrom.goods_cat.length !== 3) {
         this.messageEvent('请先选择三级分类', 'error')
         return false
       }
@@ -150,6 +186,7 @@ export default {
     },
     handleChange() {
       // console.log(this.cascaderSelectArr)
+      this.cascaderSelectArr = this.addGoodsFrom.goods_cat
       if (this.cascaderSelectArr.length !== 3) {
         this.cascaderSelectArr = []
         this.onlyData = []
@@ -183,20 +220,72 @@ export default {
       // // console.log(this.checkList)
       // console.log(this.manyData)
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
+    handleRemove(file) {
+      // console.log(file)
+      const filePath = file.response.data.tmp_path
+      const pics = this.addGoodsFrom.pics
+      const index = pics.findIndex(item => item.pic === filePath)
+      pics.splice(index, 1)
     },
     handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url
+      // console.log(file)
+      this.dialogImageUrl = file.response.data.url
       this.dialogVisible = true
     },
-    onSuccessUpload(res, file) {
-      console.log(res)
-      console.log(file)
+    onSuccessUpload(res) {
+      const picInfo = { pic: res.data.tmp_path }
+      this.addGoodsFrom.pics.push(picInfo)
+    },
+    addGoodsSubmit() {
+      // console.log('submit')
+      this.$refs.addGoodsFromRef.validate(async valid => {
+        if (!valid) {
+          // console.log('vvv')
+          return this.messageEvent('请先填写前面的必填内容', 'error')
+        }
+        // console.log('ok')
+        this.manyData.forEach(item => {
+          const newData = {
+            attr_id: item.attr_id,
+            attr_value: item.attr_vals.join(' ')
+          }
+          this.addGoodsFrom.attrs.push(newData)
+        })
+        this.onlyData.forEach(item => {
+          const newData = { attr_id: item.attr_id, attr_value: item.attr_vals }
+          this.addGoodsFrom.attrs.push(newData)
+        })
+        // form.attrs = this.addGoodsFrom.attrs
+        const form = JSON.parse(JSON.stringify(this.addGoodsFrom))
+        form.goods_cat = form.goods_cat.join(',')
+        // console.log(form)
+        // console.log(this.addGoodsFrom)
+        // console.log('ddd')
+        // console.log(addNewGoods)
+        if (this.$route.path.includes('edit')) {
+          const id = this.addGoodsFrom.goods_id
+          const { data: res } = await editGoodsById(id, form)
+          if (res.meta.status !== 200) {
+            return this.handleError({meta:{msg:'修改失败'}})
+          }
+          this.messageEvent('修改成功')
+        } else {
+          const { data: res } = await addNewGoods(form)
+          if (res.meta.status !== 201) {
+            console.log(this.addGoodsFrom)
+            return this.handleError(res)
+          }
+          this.messageEvent(res.meta.msg)
+        }
+        this.$router.push('/goods')
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.top {
+  margin-top: 15px;
+}
 </style>

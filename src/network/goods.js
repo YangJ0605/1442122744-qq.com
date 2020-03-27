@@ -21,3 +21,19 @@ export function getGoodsById(id) {
     method: 'get'
   })
 }
+
+export function addNewGoods(data) {
+  return request({
+    url: 'goods',
+    method:'post',
+    data
+  })
+}
+
+export function editGoodsById(id,data) {
+  return request({
+    url: 'goods/' + id,
+    method:'put',
+    data
+  })
+}

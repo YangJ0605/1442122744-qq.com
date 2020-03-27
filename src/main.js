@@ -3,6 +3,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './plugins/element.js'
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 import TreeTable from 'vue-table-with-tree-grid'
 //字体图标
 import '@/assets/fonts/iconfont.css'
@@ -14,6 +18,7 @@ import CHeader from '@/components/common/header.vue'
 Vue.config.productionTip = false
 Vue.component('tree-table', TreeTable)
 Vue.component('c-header',CHeader)
+Vue.use(VueQuillEditor)
 
 Vue.filter('dateFormat',(val) => {
   const date = new Date(val)

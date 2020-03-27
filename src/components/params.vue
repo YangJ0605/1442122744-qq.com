@@ -161,24 +161,17 @@
 </template>
 
 <script>
+import {mixinCascader} from '@/mixins/mixin.js'
 import {
-  getCategories,
   getParamsList,
   addParam,
   editParam,
   deleteParam
 } from '@/network/params.js'
 export default {
+  mixins: [mixinCascader],
   data() {
     return {
-      cateList: [],
-      cascaderOptions: {
-        label: 'cat_name',
-        value: 'cat_id',
-        children: 'children',
-        // checkStrictly: true,
-        expandTrigger: 'hover'
-      },
       cascaderSelectArr: [],
       activeName: 'many',
       manyData: [],
@@ -217,12 +210,6 @@ export default {
       }
       return false
     },
-    cateId() {
-      if (this.cascaderSelectArr.length === 3) {
-        return this.cascaderSelectArr[2]
-      }
-      return null
-    },
     titleDialog() {
       if (this.activeName === 'many') {
         return '动态参数'
@@ -231,13 +218,6 @@ export default {
     }
   },
   methods: {
-    async _getcategories() {
-      const { data: res } = await getCategories()
-      if (res.meta.status !== 200) {
-        return this.handleError(res)
-      }
-      this.cateList = res.data
-    },
     handleChange() {
       // console.log(this.cascaderSelectArr)
       if (this.cascaderSelectArr.length !== 3) {

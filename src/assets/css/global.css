@@ -16,3 +16,10 @@ html, body, #app {
   margin-bottom: 15px;
   font-size: 12px;
 }
+.el-steps {
+  margin: 14px 0;
+  font-size: 12px;
+}
+.el-checkbox {
+  margin: 0 8px 0 9px;
+}

@@ -9,7 +9,7 @@
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary">添加商品</el-button>
+          <el-button type="primary" @click="goToAddGoods">添加商品</el-button>
         </el-col>
       </el-row>
 
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { getGoodsList, deleteGoodsById } from '@/network/goods.js'
+import { getGoodsList, deleteGoodsById, getGoodsById } from '@/network/goods.js'
 export default {
   data() {
     return {
@@ -124,7 +124,11 @@ export default {
         })
     },
     async editGoodsBtn(id) {
-      
+      const {data:res} = await getGoodsById(id)
+      console.log(res)
+    },
+    goToAddGoods() {
+      this.$router.push('/goods/add')
     }
   }
 }

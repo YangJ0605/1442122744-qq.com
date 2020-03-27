@@ -14,3 +14,10 @@ export function deleteGoodsById(id) {
     method: 'delete'
   })
 }
+
+export function getGoodsById(id) {
+  return request({
+    url: 'goods/' + id,
+    method: 'get'
+  })
+}

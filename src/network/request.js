@@ -1,4 +1,7 @@
 import axios from 'axios'
+//顶部进度条
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 // http://server.sineava.top/api/private/v1/
 export function request(config) {
  const instance = axios.create({
@@ -8,10 +11,12 @@ export function request(config) {
 
  instance.interceptors.request.use(config => {
    config.headers.Authorization = window.sessionStorage.getItem('token') || ''
+   NProgress.start()
    return config
  })
 
  instance.interceptors.response.use(res => {
+   NProgress.done()
    return res
  })
 

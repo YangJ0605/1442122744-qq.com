@@ -81,13 +81,22 @@
        下单时间：{{detailOrder.create_time | dateFormat}}
       </el-row>
       <el-row>
-       是否付款：{{detailOrder.is_send}}
+       是否发货：{{detailOrder.is_send}}
       </el-row>
       <el-row>
        发票公司/个人：{{detailOrder.order_fapiao_company || detailOrder.order_fapiao_title}}
       </el-row>
       <el-row>
        订单编号：{{detailOrder.order_number}}
+      </el-row>
+      <el-row>
+       支付方式：{{orderPay}}
+      </el-row>
+      <el-row>
+       订单价格：{{detailOrder.order_price}}
+      </el-row>
+      <el-row>
+       支付状态：{{payStatus}}
       </el-row>
       <el-row>
        最后更新时间：{{detailOrder.update_time | dateFormat}}
@@ -143,6 +152,28 @@ export default {
   created() {
     this._getOrdersList()
   },
+  computed: {
+    orderPay() {
+      const pay = this.detailOrder.order_pay
+      if( pay === '0') {
+        return '未支付'
+      } else if(pay === '1') {
+        return '支付宝'
+      } else if (pay === '2') {
+        return '微信'
+      } else {
+        return '银行卡'
+      }
+    },
+    payStatus() {
+      const status = this.detailOrder.order_pay
+      if( status === '0') {
+        return '未付款'
+      } else {
+        return '已付款'
+      }
+    }
+  },
   methods: {
     async _getOrdersList() {
       const { data: res } = await getOrdersList(this.queryInfo)
@@ -161,15 +192,16 @@ export default {
         return this.handleError(res)
       }
       this.detailOrder = res.data
+      console.log(this.detailOrder)
       this.detailVisible = true
     },
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
-      this.getOrderList()
+      this._getOrdersList()
     },
     handleCurrentChange(newPage) {
       this.queryInfo.pagenum = newPage
-      this.getOrderList()
+      this._getOrdersList()
     },
     showBox() {
       this.addressVisible = true

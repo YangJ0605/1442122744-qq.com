@@ -242,7 +242,8 @@ export default {
     handlePictureCardPreview(file) {
       // console.log(file)
       if (this.$route.path.includes('edit')) {
-        this.dialogImageUr = file.url
+        // console.log(file.url)
+        this.dialogImageUrl = file.url
       }else {
         this.dialogImageUrl = file.response.data.url
       }

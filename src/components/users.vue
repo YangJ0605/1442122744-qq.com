@@ -275,7 +275,7 @@ export default {
           const { data: res } = await addUser(this.addUserForm)
           // console.log(res)
           if (res.meta.status !== 201)
-            return this.messageEvent(res.meta.msg, 'error', 1500, true)
+            return this.handleError(res)
           this.messageEvent(res.meta.msg, 'success', 1500, true)
           this.addDialogVisible = false
           this._getUsers()

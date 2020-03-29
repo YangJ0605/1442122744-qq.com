@@ -74,6 +74,7 @@ export default {
         if (res.meta.status !== 200)
           return this.messageEvent(res.meta.msg, 'error', 1500, true)
         // console.log('chneggong')
+        // console.log(this)
         this.messageEvent(res.meta.msg, 'success', 1500, true)
         window.sessionStorage.setItem('token', res.data.token)
         const path = this.$route.query.redirect

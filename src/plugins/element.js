@@ -83,8 +83,9 @@ Vue.use(TimelineItem)
 
 Vue.prototype.$confirm = MessageBox.confirm;
 Vue.prototype.$message = Message
+
 //自定义全局弹窗事件
-Vue.prototype.messageEvent = function (message, type = 'success', duration = 1500, center = true) {
+Vue.prototype.messageEvent =  (message, type = 'success', duration = 1500, center = true) => {
   this.$message({
     message,
     type,
@@ -92,6 +93,8 @@ Vue.prototype.messageEvent = function (message, type = 'success', duration = 150
     center
   });
 }
+
+
 Vue.prototype.handleError = function(res) {
-  this.messageEvent(res.meta.msg, 'error')
+  this.$messageEvent(res.meta.msg, 'error')
 }

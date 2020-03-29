@@ -15,7 +15,7 @@ module.exports = {
         "styleLibraryName": "theme-chalk"
       }
     ],
-    //发布阶段的插件
+    //发布阶段的插件"transform-remove-console"
     ...prodPlugins
   ]
 }

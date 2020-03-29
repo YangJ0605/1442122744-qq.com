@@ -1,12 +1,15 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store'
+
+import 'nprogress/nprogress.css'
 import './plugins/element.js'
+
 import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+
 import TreeTable from 'vue-table-with-tree-grid'
 //字体图标
 import '@/assets/fonts/iconfont.css'
@@ -31,8 +34,12 @@ Vue.filter('dateFormat',(val) => {
   return `${y}-${m}-${d} ${hh}:${mm}:${ss}`
 })
 
+//引入全局mixin
+// import commonMixin from '@/mixins/common.js'
+
+// Vue.mixin(commonMixin)
+
 new Vue({
   router,
-  store,
   render: h => h(App)
 }).$mount('#app')

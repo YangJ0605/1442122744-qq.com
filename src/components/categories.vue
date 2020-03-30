@@ -330,10 +330,6 @@ export default {
 .tree-table {
   margin: 15px 0;
 }
-.el-cascader-menu {
-  height: 300px;
-  padding: 10px 0;
-}
 .row {
   display: flex;
   align-items: center;

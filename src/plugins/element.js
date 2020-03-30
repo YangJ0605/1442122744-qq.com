@@ -86,7 +86,7 @@ Vue.prototype.$message = Message
 
 //自定义全局弹窗事件
 Vue.prototype.messageEvent =  (message, type = 'success', duration = 1500, center = true) => {
-  this.$message({
+  Message({
     message,
     type,
     duration,
@@ -96,5 +96,5 @@ Vue.prototype.messageEvent =  (message, type = 'success', duration = 1500, cente
 
 
 Vue.prototype.handleError = function(res) {
-  this.$messageEvent(res.meta.msg, 'error')
+  this.messageEvent(res.meta.msg, 'error')
 }

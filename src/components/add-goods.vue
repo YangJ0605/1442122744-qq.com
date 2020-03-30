@@ -261,6 +261,7 @@ export default {
           return this.messageEvent('请先填写前面的必填内容', 'error')
         }
         // console.log('ok')
+        console.log(this.manyData)
         this.manyData.forEach(item => {
           const newData = {
             attr_id: item.attr_id,
@@ -275,7 +276,7 @@ export default {
         // form.attrs = this.addGoodsFrom.attrs
         const form = JSON.parse(JSON.stringify(this.addGoodsFrom))
         form.goods_cat = form.goods_cat.join(',')
-        // console.log(form)
+        console.log(form)
         // console.log(this.addGoodsFrom)
         // console.log('ddd')
         // console.log(addNewGoods)
@@ -290,7 +291,7 @@ export default {
           this.messageEvent('修改成功')
         } else {
           const { data: res } = await addNewGoods(form)
-          // console.log(res)
+          console.log(res)
           if (res.meta.status !== 201) {
             console.log(this.addGoodsFrom)
             return this.handleError(res)

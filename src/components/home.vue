@@ -3,7 +3,7 @@
     <el-header>
       <div class="logo">
         <img src="~@/assets/my.jpeg"/>
-        <span>cc电商后台管理系统</span>
+        <span>Vue电商后台管理系统</span>
       </div>
       <el-button type="info" @click="logout">退出</el-button>
     </el-header>

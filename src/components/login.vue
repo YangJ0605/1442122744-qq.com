@@ -22,6 +22,19 @@
             type="password"
           ></el-input>
         </el-form-item>
+        <el-form-item prop="code">
+          <el-row :gutter="20">
+            <el-col :span='14'>
+              <el-input
+            v-model="loginFrom.code"
+            maxlength=6
+          ></el-input>
+            </el-col>
+            <el-col :span="10">
+              <el-input :value="`验证码为：${randomCode}`" disabled></el-input>
+            </el-col>
+          </el-row>
+        </el-form-item>
         <el-form-item class="btns">
           <el-button type="primary" @click="login">登录</el-button>
           <el-button type="info" @click="restLoginForm">重置</el-button>
@@ -51,14 +64,22 @@ export default {
     }
     return {
       loginFrom: {
-        username: 'admin',
-        password: '123456'
+        username: 'cc',
+        password: '1442122744',
+        code: ''
       },
       loginRules: {
         username: [{ validator: validateUsername, trigger: 'blur' }],
-        password: [{ validator: validatePass, trigger: 'blur' }]
-      }
+        password: [{ validator: validatePass, trigger: 'blur' }],
+        code: [{required: true, message: '请输入验证码', trigger: 'blur'},
+          {min: 6, max: 6, message: '请输入6位验证码', trigger: 'blur'}
+        ]
+      },
+      randomCode: ''
     }
+  },
+  created(){
+    this.randomCode = String(parseInt(Math.random() * 1000000)).padEnd(6, '0')
   },
   methods: {
     restLoginForm() {
@@ -69,6 +90,11 @@ export default {
         // console.log(valid)
         if (!valid) return
         // console.log('登录')
+        // console.log(this.loginFrom.code, this.randomCode)
+        if(this.loginFrom.code !== this.randomCode) {
+          this.randomCode = String(parseInt(Math.random() * 1000000)).padEnd(6, '0')
+          return this.messageEvent('验证码有误，请重新输入', 'error')
+        }
         const { data: res } = await login(this.loginFrom)
         // console.log(res)
         if (res.meta.status !== 200)
@@ -77,6 +103,7 @@ export default {
         // console.log(this)
         this.messageEvent(res.meta.msg, 'success', 1500, true)
         window.sessionStorage.setItem('token', res.data.token)
+        window.sessionStorage.setItem('user', this.loginFrom.username)
         const path = this.$route.query.redirect
         path ? this.$router.push(path) : this.$router.push('/home')
       })
@@ -92,7 +119,7 @@ export default {
 .login-box {
   background-color: #fff;
   width: 450px;
-  height: 300px;
+  height: 350px;
   border-radius: 3px;
   position: absolute;
   left: 50%;

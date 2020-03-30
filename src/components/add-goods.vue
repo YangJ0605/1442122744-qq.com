@@ -52,14 +52,23 @@
           </el-tab-pane>
           <el-tab-pane label="商品参数" name="1">
             <el-form-item v-for="item in manyData" :key="item.attr_id" :label="item.attr_name">
-              <el-checkbox-group v-model="item.attr_vals" @change="checkListChange">
+              <template v-if="$route.path.includes('edit')">
+                <el-checkbox-group v-model="item.attr_value" @change="checkListChange">
+                <el-checkbox :label="item2" v-for="item2 in item.attr_value" :key="item2" border></el-checkbox>
+              </el-checkbox-group>
+              <!-- {{manyData}} -->
+              </template>
+              <template v-else>
+                <el-checkbox-group v-model="item.attr_vals" @change="checkListChange">
                 <el-checkbox :label="item2" v-for="item2 in item.attr_vals" :key="item2" border></el-checkbox>
               </el-checkbox-group>
+              </template>
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品属性" name="2">
             <el-form-item v-for="item in onlyData" :key="item.attr_id" :label="item.attr_name">
-              <el-input v-model="item.attr_vals"></el-input>
+              <el-input v-model="item.attr_value" v-if="$route.path.includes('edit')"></el-input>
+              <el-input v-model="item.attr_vals" v-else></el-input>
             </el-form-item>
           </el-tab-pane>
           <el-tab-pane label="商品图片" name="3">
@@ -98,9 +107,13 @@ export default {
   mixins: [mixinCascader],
   async created() {
     if (this.$route.path.includes('edit')) {
-      const id = this.$route.query.id
+      console.log(949)
+      const id = this.$route.query.id //939
       const { data: res } = await getGoodsById(id)
+      console.log('ada')
+      console.log('edit', res)
       if (res.meta.status !== 200) {
+        this.$router.go(-1);
         return this.handleError(res)
       }
       res.data.goods_cat = res.data.goods_cat.split(',')
@@ -111,13 +124,14 @@ export default {
       res.data.attrs.forEach(item => {
         // console.log(item)
         if (item.attr_sel === 'only') {
-          this.onlyData.push(item.attr_value)
+          this.onlyData.push(item)
         } else {
-          this.manyData = item.attr_value.split(' ')
+          item.attr_value = item.attr_value.split(' ')
+          this.manyData.push(item)
         }
       })
-      // console.log(this.onlyData)
-      // console.log(this.manyData)
+      console.log(this.onlyData)
+      console.log(this.manyData)
       this.addGoodsFrom = res.data
       this.addGoodsFrom.goods_cat = this.addGoodsFrom.goods_cat.map(item =>
         Number(item)
@@ -170,17 +184,23 @@ export default {
         Authorization: window.sessionStorage.getItem('token')
       },
       dialogImageUrl: '',
-      dialogVisible: false
+      dialogVisible: false,
+      flag1: true,
+      flag2: true
     }
   },
   methods: {
     tabControlClick() {
       // this.activeName += 1
-      if (this.activeName === '1') {
+      if(!this.$route.path.includes('edit')) {
+        if (this.activeName === '1' && this.flag1) {
+        this.flag1 = false
         this._getParamsList('many')
       }
-      if (this.activeName === '2') {
+      if (this.activeName === '2' && this.flag2) {
+        this.flag2 = false
         this._getParamsList('only')
+      }
       }
     },
     beforeLeave() {
@@ -262,15 +282,17 @@ export default {
         }
         // console.log('ok')
         console.log(this.manyData)
+        this.addGoodsFrom.attrs = []
+        const isEdit = this.$route.path.includes('edit') 
         this.manyData.forEach(item => {
           const newData = {
             attr_id: item.attr_id,
-            attr_value: item.attr_vals.join(' ')
+            attr_value: isEdit ? item.attr_value.join(' ') : item.attr_vals.join(' ')
           }
           this.addGoodsFrom.attrs.push(newData)
         })
         this.onlyData.forEach(item => {
-          const newData = { attr_id: item.attr_id, attr_value: item.attr_vals }
+          const newData = { attr_id: item.attr_id, attr_value: isEdit ? item.attr_value : item.attr_vals }
           this.addGoodsFrom.attrs.push(newData)
         })
         // form.attrs = this.addGoodsFrom.attrs
@@ -284,14 +306,14 @@ export default {
           const id = this.addGoodsFrom.goods_id
           // console.log(this.addGoodsFrom.goods_id,this.$route.query.id)
           const { data: res } = await editGoodsById(id, form)
-          // console.log(res)
           if (res.meta.status !== 200) {
             return this.handleError({meta:{msg:'修改失败'}})
           }
           this.messageEvent('修改成功')
         } else {
+          console.log('from',form)
           const { data: res } = await addNewGoods(form)
-          console.log(res)
+          console.log('add', res)
           if (res.meta.status !== 201) {
             console.log(this.addGoodsFrom)
             return this.handleError(res)

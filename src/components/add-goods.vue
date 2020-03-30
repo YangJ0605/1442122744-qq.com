@@ -265,12 +265,17 @@ export default {
         if (this.$route.path.includes('edit')) {
           const id = this.addGoodsFrom.goods_id
           const { data: res } = await editGoodsById(id, form)
+          console.log(res)
           if (res.meta.status !== 200) {
             return this.handleError({meta:{msg:'修改失败'}})
           }
           this.messageEvent('修改成功')
         } else {
           const { data: res } = await addNewGoods(form)
+          setTimeout(() => {
+            console.log(form)
+          }, 3000);
+          console.log(res)
           if (res.meta.status !== 201) {
             console.log(this.addGoodsFrom)
             return this.handleError(res)

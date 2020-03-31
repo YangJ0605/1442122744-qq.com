@@ -10,7 +10,7 @@ import VueQuillEditor from 'vue-quill-editor'
 // import 'quill/dist/quill.snow.css'
 // import 'quill/dist/quill.bubble.css'
 
-import TreeTable from 'vue-table-with-tree-grid'
+// import TreeTable from 'vue-table-with-tree-grid'
 //字体图标
 import '@/assets/fonts/iconfont.css'
 //全局样式
@@ -19,7 +19,7 @@ import '@/assets/css/global.css'
 import CHeader from '@/components/common/header.vue'
 
 Vue.config.productionTip = false
-Vue.component('tree-table', TreeTable)
+// Vue.component('tree-table', TreeTable)
 Vue.component('c-header',CHeader)
 Vue.use(VueQuillEditor)
 

@@ -4,9 +4,9 @@
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品分类</el-breadcrumb-item>
-    </el-breadcrumb> -->
-  <c-header text1='商品管理' text2='商品分类'></c-header>
-  
+    </el-breadcrumb>-->
+    <c-header text1="商品管理" text2="商品分类"></c-header>
+
     <el-card>
       <el-row>
         <el-col>
@@ -14,7 +14,7 @@
         </el-col>
       </el-row>
 
-      <tree-table
+      <!-- <tree-table
         :data="catelist"
         :columns="columns"
         :selection-type="false"
@@ -49,7 +49,45 @@
             @click="deleteCateBtn(scope.row)"
           >删除</el-button>
         </template>
-      </tree-table>
+      </tree-table>-->
+      <el-table
+        :data="catelist"
+        row-key="cat_id"
+        border
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+      >
+        <el-table-column type="index"></el-table-column>
+        <el-table-column prop="cat_name" label="分类名称" sortable></el-table-column>
+        <el-table-column prop="cat_deleted" label="是否有效" sortable>
+          <template  slot-scope="scope">
+          <i class="el-icon-success" v-if="!scope.row.cat_deleted" style="color:lightgreen"></i>
+          <i class="el-icon-error" v-else style="color:red"></i>
+        </template>
+        </el-table-column>
+        <el-table-column prop="cat_level" label="排序">
+           <template  slot-scope="scope">
+          <el-tag size="mini" v-if="scope.row.cat_level === 0">一级</el-tag>
+          <el-tag type="success" size="mini" v-else-if="scope.row.cat_level === 1">二级</el-tag>
+          <el-tag type="warning" size="mini" v-else>三级</el-tag>
+        </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="editCateBtn(scope.row)"
+          >编辑</el-button>
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deleteCateBtn(scope.row)"
+          >删除</el-button>
+        </template>
+        </el-table-column>
+      </el-table>
 
       <el-pagination
         @size-change="handleSizeChange"
@@ -112,12 +150,7 @@
 </template>
 
 <script>
-import {
-  getCategories,
-  addCategory,
-  editCategory,
-  deleteCategory
-} from '@/network/categories.js'
+import { getCategories, addCategory, editCategory, deleteCategory } from '@/network/categories.js'
 export default {
   data() {
     return {
@@ -190,12 +223,11 @@ export default {
     async _getCategories() {
       const { data: res } = await getCategories(this.queryInfo)
       // console.log(res)
-      if (res.meta.status !== 200)
-        return this.messageEvent(res.meta.msg, 'error')
+      if (res.meta.status !== 200) return this.messageEvent(res.meta.msg, 'error')
       // console.log(res)
       this.catelist = res.data.result
       this.total = res.data.total
-      // console.log(this.catelist)
+      console.log(this.catelist)
     },
     handleSizeChange(newSize) {
       this.queryInfo.pagesize = newSize
@@ -290,10 +322,7 @@ export default {
         return this.messageEvent(this.errMessage, 'error')
       }
       console.log(this.editCateId)
-      const { data: res } = await editCategory(
-        this.editCateId,
-        this.editCateName
-      )
+      const { data: res } = await editCategory(this.editCateId, this.editCateName)
       if (res.meta.status !== 200) {
         return this.handleError(res)
       }
@@ -303,15 +332,11 @@ export default {
     },
     async deleteCateBtn(cate) {
       // console.log(cate)
-      const restext = await this.$confirm(
-        '此操作将永久删除该分类, 是否继续?',
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).catch(r => r)
+      const restext = await this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(r => r)
       if (restext !== 'confirm') {
         return this.messageEvent('取消删除', 'info')
       }

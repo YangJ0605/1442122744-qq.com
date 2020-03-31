@@ -307,6 +307,7 @@ export default {
           // console.log(this.addGoodsFrom.goods_id,this.$route.query.id)
           const { data: res } = await editGoodsById(id, form)
           if (res.meta.status !== 200) {
+            console.log('err',res)
             return this.handleError({meta:{msg:'修改失败'}})
           }
           this.messageEvent('修改成功')

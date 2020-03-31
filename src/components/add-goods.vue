@@ -103,6 +103,8 @@ import { mixinCascader } from '@/mixins/mixin.js'
 import { getParamsList } from '@/network/params.js'
 import { addNewGoods, getGoodsById, editGoodsById } from '@/network/goods.js'
 
+const uploadUrl = process.env.NODE_ENV === 'production' ? 'http://cc/api/private/v1/upload' : 'http://127.0.0.1:8888/api/private/v1/upload'
+
 export default {
   mixins: [mixinCascader],
   async created() {
@@ -179,7 +181,7 @@ export default {
       },
       onlyData: [],
       manyData: [],
-      uploadUrl: 'http://127.0.0.1:8888/api/private/v1/upload',
+      uploadUrl: uploadUrl,
       uploadheadrs: {
         Authorization: window.sessionStorage.getItem('token')
       },

@@ -64,7 +64,7 @@ export default {
     }
     return {
       loginFrom: {
-        username: 'cc',
+        username: 'res',
         password: '1442122744',
         code: ''
       },

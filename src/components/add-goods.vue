@@ -103,7 +103,7 @@ import { mixinCascader } from '@/mixins/mixin.js'
 import { getParamsList } from '@/network/params.js'
 import { addNewGoods, getGoodsById, editGoodsById } from '@/network/goods.js'
 
-const uploadUrl = process.env.NODE_ENV === 'production' ? 'http://cc/api/private/v1/upload' : 'http://127.0.0.1:8888/api/private/v1/upload'
+const uploadUrl = process.env.NODE_ENV === 'production' ? 'http://127.0.0.1:8888/api/private/v1/' : 'http://127.0.0.1:8888/api/private/v1/'
 
 export default {
   mixins: [mixinCascader],
@@ -121,7 +121,7 @@ export default {
       res.data.goods_cat = res.data.goods_cat.split(',')
       // res.data.goods_cat.forEach(item => Number(item))
       res.data.pics.forEach(pic => {
-        this.fileList.push({url:pic.pics_mid_url})
+        this.fileList.push({url:pic.pics_mid_url.replace('127.0.0.1', '127.0.0.1')})
       })
       res.data.attrs.forEach(item => {
         // console.log(item)
@@ -181,7 +181,7 @@ export default {
       },
       onlyData: [],
       manyData: [],
-      uploadUrl: uploadUrl,
+      uploadUrl: uploadUrl + 'upload',
       uploadheadrs: {
         Authorization: window.sessionStorage.getItem('token')
       },
@@ -262,16 +262,19 @@ export default {
       pics.splice(index, 1)
     },
     handlePictureCardPreview(file) {
-      // console.log(file)
+      console.log(file)
       if (this.$route.path.includes('edit')) {
         // console.log(file.url)
-        this.dialogImageUrl = file.url
+        const path = file.url.split('8888')[1]
+        // console.log(path)
+        this.dialogImageUrl = 'http://47.105.143.52:8888' + path
       }else {
-        this.dialogImageUrl = file.response.data.url
+        this.dialogImageUrl = file.response.data.url.replace('127.0.0.1', '47.105.143.52')
       }
       this.dialogVisible = true
     },
     onSuccessUpload(res) {
+      console.log(res)
       const picInfo = { pic: res.data.tmp_path }
       this.addGoodsFrom.pics.push(picInfo)
     },

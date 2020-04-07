@@ -119,7 +119,7 @@ export default {
       res.data.goods_cat = res.data.goods_cat.split(',')
       // res.data.goods_cat.forEach(item => Number(item))
       res.data.pics.forEach(pic => {
-        this.fileList.push({url:pic.pics_mid_url})
+        this.fileList.push({url:pic.pics_mid_url.replace('127.0.0.1', '127.0.0.1')})
       })
       res.data.attrs.forEach(item => {
         // console.log(item)
@@ -260,16 +260,19 @@ export default {
       pics.splice(index, 1)
     },
     handlePictureCardPreview(file) {
-      // console.log(file)
+      console.log(file)
       if (this.$route.path.includes('edit')) {
         // console.log(file.url)
-        this.dialogImageUrl = file.url
+        const path = file.url.split('8888')[1]
+        // console.log(path)
+        this.dialogImageUrl = 'http://127.0.0.1:8888' + path
       }else {
-        this.dialogImageUrl = file.response.data.url
+        this.dialogImageUrl = file.response.data.url.replace('127.0.0.1', '127.0.0.1')
       }
       this.dialogVisible = true
     },
     onSuccessUpload(res) {
+      console.log(res)
       const picInfo = { pic: res.data.tmp_path }
       this.addGoodsFrom.pics.push(picInfo)
     },

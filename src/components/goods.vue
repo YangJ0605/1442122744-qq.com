@@ -20,7 +20,7 @@
         <el-table-column label="商品重量" prop="goods_weight"></el-table-column>
         <el-table-column label="创建时间">
           <template slot-scope="scope">
-            {{scope.row.add_time | dateFormat}}
+            {{scope.row.add_time * 1000 | dateFormat}}
           </template>
         </el-table-column>
         <el-table-column label="操作">
